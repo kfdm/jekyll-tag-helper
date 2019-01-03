@@ -10,28 +10,25 @@ module Jekyll
             c.syntax      "tags [options]"
             c.description "Update tags"
 
-            add_build_options(c)
+            c.option 'collection', '--collection TAG', 'Name of tag collection'
             
             c.action do |_, options|
-              options = configuration_from_options(options)
-              site = Jekyll::Site.new(options)
+              # Initialize our Jekyll Site
+              site = Jekyll::Site.new(configuration_from_options({}))
               site.read
 
-              tag_dir = site.collections["tag_index"].collection_dir
-              tag_files = Dir.entries(tag_dir)
-
               site.tags.keys.each do |tag|
-                tag = tag.downcase
-                fn = tag + ".md"
+                fn = File.join(site.collections["tag_index"].collection_dir, tag.downcase + '.md')
 
-                if ! tag_files.include? fn
-                  puts "Creating Tag #{tag}"
-                  File.open(File.join(tag_dir, fn), "w") do |f|
-                    f.write("---\n")
-                    f.write("tag: #{tag}\n")
-                    f.write("layout: tag\n")
-                    f.write("---\n")
-                  end
+                # Skip if we already have an existing Tag
+                next if File.exist? fn
+
+                puts "Creating Tag #{tag}"
+                File.open(fn, "w") do |f|
+                  f.write("---\n")
+                  f.write("tag: #{tag}\n")
+                  f.write("layout: tag\n")
+                  f.write("---\n")
                 end
               end
             end
