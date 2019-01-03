@@ -18,7 +18,8 @@ module Jekyll
               site.read
 
               site.tags.keys.each do |tag|
-                fn = File.join(site.collections['tag_index'].collection_dir, tag.downcase + '.md')
+                fn = File.join(site.config['source'], 'tags', tag.downcase + '.markdown')
+                # fn = File.join(site.collections['tag_index'].collection_dir, tag.downcase + '.md')
 
                 # Skip if we already have an existing Tag
                 next if File.exist? fn
@@ -27,7 +28,7 @@ module Jekyll
                 File.open(fn, 'w') do |f|
                   f.write("---\n")
                   f.write("tag: #{tag}\n")
-                  f.write("layout: tag\n")
+                  f.write("layout: tags\n")
                   f.write("---\n")
                 end
               end
